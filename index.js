@@ -29,9 +29,12 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
-    methods: ['GET', 'POST']
+    methods: ["POST", "GET" , "PUT" , "DELETE"],
+    credentials: true
   }
 });
+
+
 
 // Object to store room data
 const rooms = {};
