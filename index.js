@@ -78,6 +78,10 @@ io.on('connection', (socket) => {
   });
 });
 
+app.get('/',(req,res)=>{
+  res.send("hello , spexzee")
+})
+
 server.listen(3000, () => {
   console.log('Server running on port 3000');
 });
