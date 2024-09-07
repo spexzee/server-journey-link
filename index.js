@@ -3,37 +3,53 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 
+// Create an Express application
 const app = express();
-app.use(cors()); // Apply CORS policy
 
+// Define allowed origins for CORS
+const allowedOrigins = [
+  'http://localhost:3000',  // Local development URL
+  'https://sp-trip.vercel.app' // Production URL
+];
+
+// Configure CORS to allow specific origins
+app.use(cors({
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST']
+}));
+
+// Create an HTTP server and integrate with Socket.IO
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*', // Allow all origins
-    methods: ['GET', 'POST'],
-  },
+    origin: allowedOrigins,
+    methods: ['GET', 'POST']
+  }
 });
 
 // Object to store room data
-let rooms = {};
+const rooms = {};
 
+// Handle socket connections
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
-  // Create or join a room
+  // Handle joining a room
   socket.on('join-room', ({ roomId, location, isAdmin }) => {
-    // Create room if it doesn't exist
     if (!rooms[roomId]) {
       rooms[roomId] = { users: [], admin: socket.id }; // First user is the admin
     }
 
-    // Add the user to the room with their location
+    // Add the user to the room
     rooms[roomId].users.push({ id: socket.id, location });
-
-    // Join the room on Socket.IO
     socket.join(roomId);
 
-    // Log the user ID and location
     console.log(`User ${socket.id} joined room ${roomId}`);
     console.log(`Current users in room ${roomId}:`, rooms[roomId].users);
 
@@ -54,7 +70,6 @@ io.on('connection', (socket) => {
         user.id === socket.id ? { ...user, location } : user
       );
 
-      // Log the updated location array
       console.log(`Location updated for room ${roomId}:`, rooms[roomId].users);
 
       io.to(roomId).emit('location-updated', rooms[roomId].users);
@@ -66,7 +81,6 @@ io.on('connection', (socket) => {
     for (const roomId in rooms) {
       rooms[roomId].users = rooms[roomId].users.filter(user => user.id !== socket.id);
       
-      // Emit the updated user list to the admin only
       if (rooms[roomId].admin) {
         io.to(rooms[roomId].admin).emit('admin-user-joined', rooms[roomId].users);
       }
@@ -77,10 +91,13 @@ io.on('connection', (socket) => {
   });
 });
 
-app.get('/', (req, res)=>{
-  res.send("hello, spexzee")
-})
+// Define a simple route for testing
+app.get('/', (req, res) => {
+  res.send("Hello, this is the server!");
+});
 
-server.listen(3000, () => {
-  console.log('Server running on port 3000');
+// Start the server
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
