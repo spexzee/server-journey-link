@@ -5,13 +5,11 @@ import cors from 'cors';
 
 const app = express();
 
-// Allowed origins for CORS
 const allowedOrigins = [
   'http://localhost:3000',  // Local development URL
   'https://sp-trip.vercel.app' // Production URL
 ];
 
-// CORS configuration
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -21,7 +19,7 @@ app.use(cors({
     }
   },
   methods: ['GET', 'POST'],
-  credentials: true // Allow cookies to be sent
+  credentials: true
 }));
 
 const server = http.createServer(app);
@@ -29,7 +27,7 @@ const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
     methods: ['GET', 'POST'],
-    credentials: true // Allow cookies to be sent
+    credentials: true
   }
 });
 
@@ -40,7 +38,7 @@ io.on('connection', (socket) => {
 
   socket.on('join-room', ({ roomId, location, isAdmin }) => {
     if (!rooms[roomId]) {
-      rooms[roomId] = { users: [], admin: socket.id }; // First user is the admin
+      rooms[roomId] = { users: [], admin: socket.id };
     }
 
     rooms[roomId].users.push({ id: socket.id, location });
