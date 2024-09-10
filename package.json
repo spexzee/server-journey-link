@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start" : "npx nodemon index.js"
+    "start": "npx nodemon index.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,10 +12,10 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "mongodb": "^6.8.1",
+    "mongoose": "^8.6.1",
+    "nodemon": "^3.1.4",
     "socket.io": "^4.7.5"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.4"
   },
   "type": "module"
 }
