@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const connectToMongoDB = async () => {
   try {
-    const mongoURI = 'mongodb+srv://spexzeeabufxu69:spexzee@cluster0.qkyze.mongodb.net/Road-Trip?retryWrites=true&w=majority&appName=Cluster0';
+    const mongoURI = process.env.MONGODB_URI 
     await mongoose.connect(mongoURI);
     console.log('Connected to MongoDB successfully');
   } catch (error) {
